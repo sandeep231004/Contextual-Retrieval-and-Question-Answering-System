@@ -35,14 +35,14 @@ This project is an AI-driven **document retrieval and question-answering system*
    ```
 
 ---
-## Preprocessing Pipeline
+## Loading and Preprocessing Pipeline
 The preprocessing step ensures that text data is **cleaned, split into meaningful chunks**, and embedded for storage.
 
 
 ### 1️⃣ **Document Loading**
 - **Purpose**: Loads raw text/PDF files.
 - **Code Implementation**:
-  ```python
+```python
 def read_pdf(file_path: str) -> List[Dict[str, str]]: 
     """
     Returns: List[Dict[str, str]]: A list of dictionaries with 'page' and 'content'.
@@ -65,16 +65,36 @@ def read_pdf(file_path: str) -> List[Dict[str, str]]:
     return documents
   ```
 
-### 2️⃣ **Text Chunking**
-- **Purpose**: Breaks down large documents into **fixed-sized overlapping segments**.
+### 2️⃣ **Preprocessing and Text Chunking**
+- **Purpose**: Breaks down large documents into **fixed-sized overlapping segments and removes unnecessary whitespace, special characters, and stopwords.**.
 - **Code Implementation**:
-  ```python
-  def chunk_text(text, chunk_size=512, overlap=50):
-      words = text.split()
-      chunks = []
-      for i in range(0, len(words), chunk_size - overlap):
-          chunks.append(" ".join(words[i:i + chunk_size]))
-      return chunks
+```python
+# Preprocess the extracted documents by cleaning and splitting them into chunks.
+
+def preprocess_documents(documents: List[Dict[str, str]]) -> List[Dict[str, str]]: 
+    """
+    Args:
+        documents (List[Dict[str, str]]): List of extracted documents with page and content.
+    
+    Returns:
+        List[Dict[str, str]]: Preprocessed documents.
+    """
+    processed_docs = []
+    chunk_size = 800  # Adjust based on your needs
+    
+    for doc in documents:
+        content = doc['content']
+        
+        # Clean up content (optional: add specific cleaning rules)
+        content = content.replace("\n", " ").strip()
+        content = content.replace('\uf0b7', '-')
+        
+        # Split content into chunks if it's too long
+        for i in range(0, len(content), chunk_size):
+            chunk = content[i:i + chunk_size]
+            processed_docs.append({"page": doc['page'], "chunk": chunk})
+    
+    return processed_docs
   ```
 
 ---
@@ -93,10 +113,26 @@ def read_pdf(file_path: str) -> List[Dict[str, str]]:
 ### 1️⃣ **Storing Data in Pinecone**
 - **Purpose**: Saves **text embeddings** in a vector database for efficient searching.
 - **Code Implementation**:
-  ```python
-  def store_chunks_in_pinecone(chunks, embeddings):
-      for i, (chunk, vector) in enumerate(zip(chunks, embeddings)):
-          index.upsert(vectors=[(str(i), vector, {'chunk': chunk})])
+```python
+# Generate embeddings and store in Pinecone
+for document in final_doc:
+    vector_id = document["id"]
+    chunk_content = document["chunk"]
+    metadata = document.get("metadata", {})
+
+    # Check if the vector already exists in Pinecone
+    existing_vector = index.fetch(ids=[vector_id])
+
+    # If the vector exists, skip upsert (no comparison with metadata)
+    if vector_id in existing_vector.get("vectors", {}):
+        continue  # Skip this document
+
+    # Get embedding for the content
+    embedding = ollama_emb.embed_query(chunk_content)  # Adjust based on your embedding model's API
+
+    metadata["chunk"] = chunk_content
+    # Upsert the document and its embedding into Pinecone
+    index.upsert([(vector_id, embedding, metadata)])
   ```
 
 ### 2️⃣ **Retrieving Relevant Chunks**
@@ -134,14 +170,11 @@ print("Generated Answer:", answer)
 ---
 ## Future Improvements
 🔹 **Improve Chunking**: Optimize chunk size dynamically for better context.  
-🔹 **Enhance Answer Generation**: Fine-tune FLAN-T5 for more structured answers.  
+🔹 **Enhance Answer Generation**: For contextual and efficient answer generation you can use models like GPT, Llama etc...
 🔹 **Multi-Modal Support**: Extend to PDFs, images, and audio-based retrieval.  
 
 ---
 ## Contributors
-- **Your Name** - [GitHub](https://github.com/yourusername)
+- **Sandeep Dabbada** - [GitHub](https://github.com/sandeep231004)
 
----
-## License
-MIT License
 
