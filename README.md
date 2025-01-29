@@ -1,9 +1,9 @@
-# Project: AI-Powered Information Retrieval System
+# Project: Contextual Retrieval and Question Answering System
 
 ## Overview
-This project is an AI-driven **information retrieval system** that leverages **vector databases** and **LLM-based query answering** to extract and generate meaningful responses from a large corpus of documents. The pipeline includes:
+This project is an AI-driven **document retrieval and question-answering system** that leverages **vector databases,** **Pinecone, sentence embeddings, and a T5-based model**  and **LLM-based query answering** to extract and generate meaningful responses from a large corpus of documents. The pipeline includes:
 - **Preprocessing**: Cleaning and chunking documents.
-- **Embedding Generation**: Converting text into vector embeddings.
+- **Embedding Generation**: Converting text into vector embeddings.   
 - **Vector Storage & Retrieval**: Storing and fetching relevant document chunks from a Pinecone database.
 - **Answer Generation**: Using an LLM to provide detailed and contextual responses.
 
@@ -38,14 +38,31 @@ This project is an AI-driven **information retrieval system** that leverages **v
 ## Preprocessing Pipeline
 The preprocessing step ensures that text data is **cleaned, split into meaningful chunks**, and embedded for storage.
 
-### 1️⃣ **Document Loading & Cleaning**
-- **Purpose**: Loads raw text/PDF files and removes unnecessary whitespace, special characters, and stopwords.
+
+### 1️⃣ **Document Loading**
+- **Purpose**: Loads raw text/PDF files.
 - **Code Implementation**:
   ```python
-  def clean_text(text):
-      text = text.replace('\n', ' ').strip()
-      text = re.sub(r'[^a-zA-Z0-9.,!?\s]', '', text)
-      return text.lower()
+def read_pdf(file_path: str) -> List[Dict[str, str]]: 
+    """
+    Returns: List[Dict[str, str]]: A list of dictionaries with 'page' and 'content'.
+    """
+    documents = []
+    
+    try:
+        # Open the PDF file
+        with open(file_path, 'rb') as pdf_file:
+            reader = PyPDF2.PdfReader(pdf_file)
+            for page_number, page in enumerate(reader.pages):
+                text = page.extract_text()
+                
+                # Skip empty pages
+                if text.strip():
+                    documents.append({"page": page_number + 1, "content": text})
+    except Exception as e:
+        print(f"Error reading PDF: {e}")
+    
+    return documents
   ```
 
 ### 2️⃣ **Text Chunking**
