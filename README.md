@@ -1,10 +1,10 @@
 # **Project Name:** **Contextual Retrieval and Question Answering System**
 
-📌 Overview
+# **📌 Overview**
 
 This project implements an advanced document retrieval and question-answering system using Pinecone, sentence embeddings, and a T5-based model. It allows users to input a query, retrieve the most relevant document chunks, and generate a context-aware response using a fine-tuned FLAN-T5 model.
 
-✨ Features
+# **✨ Features**
 
 Vector-based document retrieval using Pinecone
 
@@ -14,7 +14,7 @@ Context-aware response generation using FLAN-T5
 
 Efficient preprocessing and chunking of documents
 
-📂 Project Structure
+# **📂 Project Structure** 
 
 ├── project.ipynb          # Main Jupyter Notebook containing the code
 ├── data/                  # Folder containing raw and processed data
@@ -22,12 +22,7 @@ Efficient preprocessing and chunking of documents
 ├── requirements.txt       # Dependencies for setting up the environment
 └── README.md              # This file
 
-🔧 Installation & Setup
-
-Clone the repository:
-
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+# 🔧 Installation & Setup
 
 Create a virtual environment (optional but recommended):
 
