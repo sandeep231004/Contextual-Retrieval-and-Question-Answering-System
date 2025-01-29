@@ -1,5 +1,5 @@
-**Project Name:** Advanced Contextual Retrieval and Question Answering System
-
+# **Project Name:** **Contextual Retrieval and Question Answering System
+**
 📌 Overview
 
 This project implements an advanced document retrieval and question-answering system using Pinecone, sentence embeddings, and a T5-based model. It allows users to input a query, retrieve the most relevant document chunks, and generate a context-aware response using a fine-tuned FLAN-T5 model.
