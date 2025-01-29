@@ -17,18 +17,13 @@ This project is an AI-driven **document retrieval and question-answering system*
 ---
 ## Installation & Setup
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/yourproject.git
-   cd yourproject
-   ```
-2. Create a virtual environment and install dependencies:
+1. Create a virtual environment and install dependencies:
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows use 'venv\\Scripts\\activate'
    pip install -r requirements.txt
    ```
-3. Set up **Pinecone API Key** and **Hugging Face Model Credentials**:
+2. Set up **Pinecone API Key** and **Hugging Face Model Credentials**:
    ```bash
    export PINECONE_API_KEY='your_pinecone_key'
    export HF_MODEL='google/flan-t5-large'
@@ -153,9 +148,12 @@ for document in final_doc:
   def generate_answer(query, retrieved_chunks):
       context = " ".join(retrieved_chunks)
       input_text = f"question: {query} context: {context}"
-      input_ids = tokenizer(input_text, return_tensors="pt").input_ids
-      output = model.generate(input_ids, max_length=500, num_beams=5, early_stopping=True)
-      return tokenizer.decode(output[0], skip_special_tokens=True)
+      inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, 
+    max_length=512 )
+      output = model.generate(inputs.input_ids, max_length=150, num_beams=5, early_stopping=True, length_penalty=1.0)
+  
+      answer = tokenizer.decode(output[0], skip_special_tokens=True)
+      return answer
   ```
 
 ---
@@ -169,8 +167,10 @@ print("Generated Answer:", answer)
 
 ---
 ## Future Improvements
-🔹 **Improve Chunking**: Optimize chunk size dynamically for better context.  
+🔹 **Improve Chunking**: Optimize chunk size dynamically for better context or try to use other embedding models like OpenAI Embedding etc...  
+
 🔹 **Enhance Answer Generation**: For contextual and efficient answer generation you can use models like GPT, Llama etc...
+
 🔹 **Multi-Modal Support**: Extend to PDFs, images, and audio-based retrieval.  
 
 ---
