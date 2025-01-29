@@ -1,4 +1,4 @@
-Project Name: Advanced Contextual Retrieval and Question Answering System
+**Project Name:** Advanced Contextual Retrieval and Question Answering System
 
 📌 Overview
 
